@@ -1,8 +1,11 @@
 package com.clindevstu.registropendientes.core.common
 
-object Constants {
-    const val BASE_URL = "https://api.miapp.com/"
+object GlobalVars {
+    const val BASE_URL = "https://script.google.com/macros/s/"
+    const val REGISTROINTERNET_URL = "${BASE_URL}AKfycbyNC-FVx4XR3keplB4FwYlkOAfFymp4N6XG9PuczB8ykh97yAlrSsuntgrMMScqNRDV/"
+    const val REGISTROAVERIAS_URL = "${BASE_URL}AKfycbzx-s5GFu9xAx663hCQezSubw1WOMgJ9Mna_x8I5tsaDKTgO9NUr4VYpYBJxC1FzccX/"
+    const val REGISTROCAMARAS_URL = "${BASE_URL}AKfycbwNDwggmt0sdTskS00HNb3ysRFkf4WCEVxeOQmRsm7GjVrCQdq54sGDKg_gECWKWuYLqA/"
+    const val REGISTRORECOJO_URL = "${BASE_URL}AKfycbzgQsD2Z7IVAiRzhC27VY6-K8W85lXknNDuxHQhrez23oINWXjknkfJSgQxF00WM_is/"
 
-
-    const val Debug = "ErrorRegistroClientes"
+    const val DEBUG = "ErrorRegistroClientes"
 }
