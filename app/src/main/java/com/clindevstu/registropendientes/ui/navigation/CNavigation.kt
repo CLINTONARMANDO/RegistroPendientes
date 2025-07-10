@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.clindevstu.registropendientes.ui.modules.panelcentral.ScreenPanelCentral
 import com.clindevstu.registropendientes.ui.modules.splashprincipal.ScreenSplashPrincipal
 
 @Composable
@@ -13,7 +14,7 @@ fun AppNavGraph(navController: NavHostController) {
             ScreenSplashPrincipal(navController)
         }
         composable(NavRoute.PanelCentral.route) {
-            PanelCentralScreen(navController)
+            ScreenPanelCentral(navController)
         }
         composable(NavRoute.RegistroInternet.route) {
             RegistroInternetScreen(navController)

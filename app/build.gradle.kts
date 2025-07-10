@@ -80,4 +80,12 @@ dependencies {
     // Kotlin Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+
+
+
+    // Lifecycle ViewModel (para usar viewModelScope, StateFlow en ViewModel, etc.)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Compose integration (si usas collectAsState())
+    implementation(libs.androidx.lifecycle.runtime.compose)
 }
