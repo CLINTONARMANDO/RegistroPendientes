@@ -13,8 +13,8 @@ class RegistroInternetViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private var _state = mutableStateOf<RegistroInternetState>(RegistroInternetState.Init)
-    val state: RegistroInternetState get() = _state.value
+    private var _state = MutableStateFlow<RegistroInternetState>(RegistroInternetState.Init)
+    val state: StateFlow<RegistroInternetState> = _state
 
     // VARIABLES FORMULARIO
 

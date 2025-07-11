@@ -5,6 +5,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.clindevstu.registropendientes.ui.modules.panelcentral.ScreenPanelCentral
+import com.clindevstu.registropendientes.ui.modules.panelcentral.configuraciones.ScreenConfiguraciones
+import com.clindevstu.registropendientes.ui.modules.panelcentral.notificaciones.ScreenNotificaciones
+import com.clindevstu.registropendientes.ui.modules.panelcentral.panelprincipal.ScreenPanelPrincipal
+import com.clindevstu.registropendientes.ui.modules.registroaverias.ScreenRegistroAverias
+import com.clindevstu.registropendientes.ui.modules.registrocamaras.ScreenRegistroCamaras
+import com.clindevstu.registropendientes.ui.modules.registrointernet.ScreenRegistroInternet
+import com.clindevstu.registropendientes.ui.modules.registrorecojo.ScreenRegistroRecojo
 import com.clindevstu.registropendientes.ui.modules.splashprincipal.ScreenSplashPrincipal
 
 @Composable
@@ -16,17 +23,26 @@ fun AppNavGraph(navController: NavHostController) {
         composable(NavRoute.PanelCentral.route) {
             ScreenPanelCentral(navController)
         }
+        composable(NavRoute.PanelPrincipal.route) {
+            ScreenPanelPrincipal(navController)
+        }
+        composable(NavRoute.Notificaciones.route) {
+            ScreenNotificaciones(navController)
+        }
+        composable(NavRoute.Configuraciones.route) {
+            ScreenConfiguraciones(navController)
+        }
         composable(NavRoute.RegistroInternet.route) {
-            RegistroInternetScreen(navController)
+            ScreenRegistroInternet(navController)
         }
         composable(NavRoute.RegistroAverias.route) {
-            RegistroAveriasScreen(navController)
+            ScreenRegistroAverias(navController)
         }
         composable(NavRoute.RegistroRecojo.route) {
-            RegistroRecojoScreen(navController)
+            ScreenRegistroRecojo(navController)
         }
         composable(NavRoute.RegistroCamaras.route) {
-            RegistroCamarasScreen(navController)
+            ScreenRegistroCamaras(navController)
         }
     }
 }

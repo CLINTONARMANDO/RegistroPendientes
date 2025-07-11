@@ -9,10 +9,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class RegistroAveriasViewModel @Inject constructor(
-    val application: Application
+    application: Application
 ) : AndroidViewModel(application){
-    private var _state = mutableStateOf<RegistroAveriasState>(RegistroAveriasState.Init)
-    val state: RegistroAveriasState get() = _state.value
+
+    private val _state = MutableStateFlow<RegistroAveriasState>(RegistroAveriasState.Init)
+    val state: StateFlow<RegistroAveriasState> = _state
 
     // VARIABLES FORMULARIO
 
@@ -55,7 +56,8 @@ class RegistroAveriasViewModel @Inject constructor(
     private val _selectedParaElDia = MutableStateFlow<String?>(null)
     val selectedParaElDia: StateFlow<String?> = _selectedParaElDia
 
-    // Errores
+    // ERRORES
+
     private val _codigoRegistroError = MutableStateFlow<String?>(null)
     val codigoRegistroError: StateFlow<String?> = _codigoRegistroError
 
@@ -74,7 +76,6 @@ class RegistroAveriasViewModel @Inject constructor(
     private val _descripcionError = MutableStateFlow<String?>(null)
     val descripcionError: StateFlow<String?> = _descripcionError
 
-    // ERRORES
     private val _selectedAsesorError = MutableStateFlow<String?>(null)
     val selectedAsesorError: StateFlow<String?> = _selectedAsesorError
 

@@ -1,7 +1,9 @@
 package com.clindevstu.registropendientes.ui.modules.registrorecojo
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import com.clindevstu.registropendientes.ui.modules.registrocamaras.RegistroCamarasState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -10,13 +12,17 @@ class RegistroRecojoViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application){
 
+    private var _state = MutableStateFlow<RegistroCamarasState>(RegistroCamarasState.Init)
+    val state: StateFlow<RegistroCamarasState> = _state
+
     // VARIABLES DEL FORMULARIO
+
+
+    private val _codigoUsuario = MutableStateFlow<String?>(null)
+    val codigoUsuario: StateFlow<String?> = _codigoUsuario
 
     private val _nombreCliente = MutableStateFlow<String?>(null)
     val nombreCliente: StateFlow<String?> = _nombreCliente
-
-    private val _dni = MutableStateFlow<String?>(null)
-    val dni: StateFlow<String?> = _dni
 
     private val _celular = MutableStateFlow<String?>(null)
     val celular: StateFlow<String?> = _celular
@@ -24,17 +30,14 @@ class RegistroRecojoViewModel @Inject constructor(
     private val _direccion = MutableStateFlow<String?>(null)
     val direccion: StateFlow<String?> = _direccion
 
-    private val _productos = MutableStateFlow<String?>(null)
-    val productos: StateFlow<String?> = _productos
+    private val _motivo = MutableStateFlow<String?>(null)
+    val motivo: StateFlow<String?> = _motivo
 
-    private val _total = MutableStateFlow<String?>(null)
-    val total: StateFlow<String?> = _total
+    private val _selectedAsesor = MutableStateFlow<String?>(null)
+    val selectedAsesor: StateFlow<String?> = _selectedAsesor
 
-    private val _adelanto = MutableStateFlow<String?>(null)
-    val adelanto: StateFlow<String?> = _adelanto
-
-    private val _saldo = MutableStateFlow<String?>(null)
-    val saldo: StateFlow<String?> = _saldo
+    private val _selectedCiudadZona = MutableStateFlow<String?>(null)
+    val selectedCiudadZona: StateFlow<String?> = _selectedCiudadZona
 
     private val _selectedEmpresa = MutableStateFlow<String?>(null)
     val selectedEmpresa: StateFlow<String?> = _selectedEmpresa
@@ -42,25 +45,22 @@ class RegistroRecojoViewModel @Inject constructor(
     private val _selectedTipoRegistro = MutableStateFlow<String?>(null)
     val selectedTipoRegistro: StateFlow<String?> = _selectedTipoRegistro
 
-    private val _selectedCiudadZona = MutableStateFlow<String?>(null)
-    val selectedCiudadZona: StateFlow<String?> = _selectedCiudadZona
-
     private val _selectedFechaRegistro = MutableStateFlow<String?>(null)
     val selectedFechaRegistro: StateFlow<String?> = _selectedFechaRegistro
+
+    private val _selectedFechaRecojo = MutableStateFlow<String?>(null)
+    val selectedFechaRecojo: StateFlow<String?> = _selectedFechaRecojo
 
     private val _selectedParaElDia = MutableStateFlow<String?>(null)
     val selectedParaElDia: StateFlow<String?> = _selectedParaElDia
 
-    private val _selectedAsesor = MutableStateFlow<String?>(null)
-    val selectedAsesor: StateFlow<String?> = _selectedAsesor
-
     // VARIABLES DE ERROR
+
+    private val _codigoUsuarioError = MutableStateFlow<String?>(null)
+    val codigoUsuarioError: StateFlow<String?> = _codigoUsuarioError
 
     private val _nombreClienteError = MutableStateFlow<String?>(null)
     val nombreClienteError: StateFlow<String?> = _nombreClienteError
-
-    private val _dniError = MutableStateFlow<String?>(null)
-    val dniError: StateFlow<String?> = _dniError
 
     private val _celularError = MutableStateFlow<String?>(null)
     val celularError: StateFlow<String?> = _celularError
@@ -68,45 +68,40 @@ class RegistroRecojoViewModel @Inject constructor(
     private val _direccionError = MutableStateFlow<String?>(null)
     val direccionError: StateFlow<String?> = _direccionError
 
-    private val _productosError = MutableStateFlow<String?>(null)
-    val productosError: StateFlow<String?> = _productosError
+    private val _motivoError = MutableStateFlow<String?>(null)
+    val motivoError: StateFlow<String?> = _motivoError
 
-    private val _totalError = MutableStateFlow<String?>(null)
-    val totalError: StateFlow<String?> = _totalError
+    private val _asesorError = MutableStateFlow<String?>(null)
+    val asesorError: StateFlow<String?> = _asesorError
 
-    private val _adelantoError = MutableStateFlow<String?>(null)
-    val adelantoError: StateFlow<String?> = _adelantoError
+    private val _ciudadZonaError = MutableStateFlow<String?>(null)
+    val ciudadZonaError: StateFlow<String?> = _ciudadZonaError
 
-    private val _saldoError = MutableStateFlow<String?>(null)
-    val saldoError: StateFlow<String?> = _saldoError
+    private val _empresaError = MutableStateFlow<String?>(null)
+    val empresaError: StateFlow<String?> = _empresaError
 
-    private val _selectedEmpresaError = MutableStateFlow<String?>(null)
-    val selectedEmpresaError: StateFlow<String?> = _selectedEmpresaError
+    private val _tipoRegistroError = MutableStateFlow<String?>(null)
+    val tipoRegistroError: StateFlow<String?> = _tipoRegistroError
 
-    private val _selectedTipoRegistroError = MutableStateFlow<String?>(null)
-    val selectedTipoRegistroError: StateFlow<String?> = _selectedTipoRegistroError
+    private val _fechaRegistroError = MutableStateFlow<String?>(null)
+    val fechaRegistroError: StateFlow<String?> = _fechaRegistroError
 
-    private val _selectedCiudadZonaError = MutableStateFlow<String?>(null)
-    val selectedCiudadZonaError: StateFlow<String?> = _selectedCiudadZonaError
+    private val _fechaRecojoError = MutableStateFlow<String?>(null)
+    val fechaRecojoError: StateFlow<String?> = _fechaRecojoError
 
-    private val _selectedFechaRegistroError = MutableStateFlow<String?>(null)
-    val selectedFechaRegistroError: StateFlow<String?> = _selectedFechaRegistroError
+    private val _paraElDiaError = MutableStateFlow<String?>(null)
+    val paraElDiaError: StateFlow<String?> = _paraElDiaError
 
-    private val _selectedParaElDiaError = MutableStateFlow<String?>(null)
-    val selectedParaElDiaError: StateFlow<String?> = _selectedParaElDiaError
-
-    private val _selectedAsesorError = MutableStateFlow<String?>(null)
-    val selectedAsesorError: StateFlow<String?> = _selectedAsesorError
 
 
     // FUNCIONES DE CAMBIO DE VALOR PARA CADA VARIABLE DEL FORMULARIO
 
-    fun onNombreClienteChange(value: String) {
-        _nombreCliente.value = value
+    fun onCodigoUsuarioChange(value: String) {
+        _codigoUsuario.value = value
     }
 
-    fun onDniChange(value: String) {
-        _dni.value = value
+    fun onNombreClienteChange(value: String) {
+        _nombreCliente.value = value
     }
 
     fun onCelularChange(value: String) {
@@ -117,102 +112,86 @@ class RegistroRecojoViewModel @Inject constructor(
         _direccion.value = value
     }
 
-    fun onProductosChange(value: String) {
-        _productos.value = value
+    fun onMotivoChange(value: String) {
+        _motivo.value = value
     }
 
-    fun onTotalChange(value: String) {
-        _total.value = value
-    }
-
-    fun onAdelantoChange(value: String) {
-        _adelanto.value = value
-    }
-
-    fun onSaldoChange(value: String) {
-        _saldo.value = value
-    }
-
-    fun onSelectedEmpresaChange(value: String) {
-        _selectedEmpresa.value = value
-    }
-
-    fun onSelectedTipoRegistroChange(value: String) {
-        _selectedTipoRegistro.value = value
-    }
-
-    fun onSelectedCiudadZonaChange(value: String) {
-        _selectedCiudadZona.value = value
-    }
-
-    fun onselectedFechaRegistroChange(value: String) {
-        _selectedFechaRegistro.value = value
-    }
-
-    fun onselectedParaElDiaChange(value: String) {
-        _selectedParaElDia.value = value
-    }
-
-    fun onselectedAsesorChange(value: String) {
+    fun onAsesorChange(value: String) {
         _selectedAsesor.value = value
     }
 
+    fun onCiudadZonaChange(value: String) {
+        _selectedCiudadZona.value = value
+    }
+
+    fun onEmpresaChange(value: String) {
+        _selectedEmpresa.value = value
+    }
+
+    fun onTipoRegistroChange(value: String) {
+        _selectedTipoRegistro.value = value
+    }
+
+    fun onFechaRegistroChange(value: String) {
+        _selectedFechaRegistro.value = value
+    }
+
+    fun onFechaRecojoChange(value: String) {
+        _selectedFechaRecojo.value = value
+    }
+
+    fun onParaElDiaChange(value: String) {
+        _selectedParaElDia.value = value
+    }
+
     // VALIDACIONES
+
+    fun validarCodigoUsuario() {
+        _codigoUsuarioError.value = if (_codigoUsuario.value.isNullOrBlank()) "El código de usuario es obligatorio" else null
+    }
 
     fun validarNombreCliente() {
         _nombreClienteError.value = if (_nombreCliente.value.isNullOrBlank()) "El nombre del cliente es obligatorio" else null
     }
 
-    fun validarDni() {
-        _dniError.value = if (_dni.value.isNullOrBlank()) "El DNI es obligatorio" else null
-    }
-
     fun validarCelular() {
-        _celularError.value = if (_celular.value.isNullOrBlank()) "El celular es obligatorio" else null
+        _celularError.value = if (_celular.value.isNullOrBlank()) "El número de celular es obligatorio" else null
     }
 
     fun validarDireccion() {
         _direccionError.value = if (_direccion.value.isNullOrBlank()) "La dirección es obligatoria" else null
     }
 
-    fun validarProductos() {
-        _productosError.value = if (_productos.value.isNullOrBlank()) "Los productos son obligatorios" else null
-    }
-
-    fun validarTotal() {
-        _totalError.value = if (_total.value.isNullOrBlank()) "El total es obligatorio" else null
-    }
-
-    fun validarAdelanto() {
-        _adelantoError.value = if (_adelanto.value.isNullOrBlank()) "El adelanto es obligatorio" else null
-    }
-
-    fun validarSaldo() {
-        _saldoError.value = if (_saldo.value.isNullOrBlank()) "El saldo es obligatorio" else null
-    }
-
-    fun validarEmpresa() {
-        _selectedEmpresaError.value = if (_selectedEmpresa.value.isNullOrBlank()) "La empresa es obligatoria" else null
-    }
-
-    fun validarTipoRegistro() {
-        _selectedTipoRegistroError.value = if (_selectedTipoRegistro.value.isNullOrBlank()) "El tipo de registro es obligatorio" else null
-    }
-
-    fun validarCiudadZona() {
-        _selectedCiudadZonaError.value = if (_selectedCiudadZona.value.isNullOrBlank()) "La ciudad o zona es obligatoria" else null
-    }
-
-    fun validarFechaRegistro() {
-        _selectedFechaRegistro.value = if (_selectedFechaRegistro.value.isNullOrBlank()) "La fecha de registro es obligatoria" else null
-    }
-
-    fun validarParaElDia() {
-        _selectedParaElDiaError.value = if (_selectedParaElDia.value.isNullOrBlank()) "La fecha 'Para el día' es obligatoria" else null
+    fun validarMotivo() {
+        _motivoError.value = if (_motivo.value.isNullOrBlank()) "El motivo es obligatorio" else null
     }
 
     fun validarAsesor() {
-        _selectedAsesor.value = if (_selectedAsesor.value.isNullOrBlank()) "El asesor es obligatorio" else null
+        _asesorError.value = if (_selectedAsesor.value.isNullOrBlank()) "Debe seleccionar un asesor" else null
+    }
+
+    fun validarCiudadZona() {
+        _ciudadZonaError.value = if (_selectedCiudadZona.value.isNullOrBlank()) "Debe seleccionar una ciudad o zona" else null
+    }
+
+    fun validarEmpresa() {
+        _empresaError.value = if (_selectedEmpresa.value.isNullOrBlank()) "Debe seleccionar una empresa" else null
+    }
+
+    fun validarTipoRegistro() {
+        _tipoRegistroError.value = if (_selectedTipoRegistro.value.isNullOrBlank()) "Debe seleccionar un tipo de registro" else null
+    }
+
+    fun validarFechaRegistro() {
+        _fechaRegistroError.value = if (_selectedFechaRegistro.value.isNullOrBlank()) "La fecha de registro es obligatoria" else null
+    }
+
+    fun validarFechaRecojo() {
+        _fechaRecojoError.value = if (_selectedFechaRecojo.value.isNullOrBlank()) "La fecha de recojo es obligatoria" else null
+    }
+
+    fun validarParaElDia() {
+        _paraElDiaError.value = if (_selectedParaElDia.value.isNullOrBlank()) "Debe indicar si es para el día" else null
     }
 
 

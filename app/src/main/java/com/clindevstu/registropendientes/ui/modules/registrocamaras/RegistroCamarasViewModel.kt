@@ -1,14 +1,18 @@
 package com.clindevstu.registropendientes.ui.modules.registrocamaras
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-class RegisroCamarasViewModel @Inject constructor(
+class RegistroCamarasViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
+
+    private var _state = MutableStateFlow<RegistroCamarasState>(RegistroCamarasState.Init)
+    val state: StateFlow<RegistroCamarasState> = _state
 
     // VARIABLES FORMULARIO
 

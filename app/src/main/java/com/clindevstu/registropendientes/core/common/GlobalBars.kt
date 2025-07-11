@@ -7,5 +7,8 @@ object GlobalVars {
     const val REGISTROCAMARAS_URL = "${BASE_URL}AKfycbwNDwggmt0sdTskS00HNb3ysRFkf4WCEVxeOQmRsm7GjVrCQdq54sGDKg_gECWKWuYLqA/"
     const val REGISTRORECOJO_URL = "${BASE_URL}AKfycbzgQsD2Z7IVAiRzhC27VY6-K8W85lXknNDuxHQhrez23oINWXjknkfJSgQxF00WM_is/"
 
+
+    const val USUARIOS_URL = "${BASE_URL}AKfycbzgQsD2Z7IVAiRzhC27VY6-K8W85lXknNDuxHQhrez23oINWXjknkfJSgQxF00WM_is/"
+
     const val DEBUG = "ErrorRegistroClientes"
 }
