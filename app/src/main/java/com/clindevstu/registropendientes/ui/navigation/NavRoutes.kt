@@ -2,6 +2,7 @@ package com.clindevstu.registropendientes.ui.navigation
 
 sealed class NavRoute(val route: String) {
     object SplashScreen : NavRoute("splash_screen")
+    object Login : NavRoute("login")
     object PanelCentral : NavRoute("panel_central")
     object PanelPrincipal : NavRoute("panel_principal")
     object Notificaciones : NavRoute("notificaciones")

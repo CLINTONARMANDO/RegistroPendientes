@@ -1,8 +1,10 @@
 package com.clindevstu.registropendientes.core.models.responses
 
+import com.google.gson.annotations.SerializedName
+
 data class UsuarioResponse(
-    val nombre: String?,
-    val esTecnico: Int?,
-    val nombreTecnico: String?,
-    val mensaje: String? // Si no se pudo ingresar
+    @SerializedName("nombre") val nombre: String?,
+    @SerializedName("esTecnico") val esTecnico: Int?,
+    @SerializedName("nombreTecnico") val nombreTecnico: String?,
+    @SerializedName("token") val token: String? // Si no se pudo ingresar
 )

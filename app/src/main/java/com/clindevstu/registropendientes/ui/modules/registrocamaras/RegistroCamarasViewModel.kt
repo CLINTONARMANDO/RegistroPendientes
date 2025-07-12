@@ -3,6 +3,8 @@ package com.clindevstu.registropendientes.ui.modules.registrocamaras
 import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import com.clindevstu.registropendientes.core.models.responses.PaginationResponse
+import com.clindevstu.registropendientes.core.models.responses.RegistroCamarasSimpleResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -101,6 +103,15 @@ class RegistroCamarasViewModel @Inject constructor(
 
     private val _selectedAsesorError = MutableStateFlow<String?>(null)
     val selectedAsesorError: StateFlow<String?> = _selectedAsesorError
+
+    // DATOS PARA MOSTRAR
+
+    private val _paginaRegistroCamaras = MutableStateFlow<PaginationResponse<RegistroCamarasSimpleResponse>?>(null)
+    val paginaRegistroCamaras: StateFlow<PaginationResponse<RegistroCamarasSimpleResponse>?> = _paginaRegistroCamaras
+
+    private val _listaRegistroCamaras = MutableStateFlow<List<RegistroCamarasSimpleResponse>?>(null)
+    val listaRegistroCamaras: StateFlow<List<RegistroCamarasSimpleResponse>?> = _listaRegistroCamaras
+
 
     // FUNCIONES DE CAMBIO DE VALORES DE VARIABLES
 

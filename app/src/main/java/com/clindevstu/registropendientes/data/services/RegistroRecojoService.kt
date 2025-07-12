@@ -1,6 +1,7 @@
 package com.clindevstu.registropendientes.data.services
 
-import com.clindevstu.registropendientes.core.models.responses.RegistroRecojoResponse
+import com.clindevstu.registropendientes.core.models.responses.PaginationResponse
+import com.clindevstu.registropendientes.core.models.responses.RegistroRecojoSimpleResponse
 import retrofit2.http.*
 import retrofit2.Response
 
@@ -12,22 +13,22 @@ interface RegistroRecojoService {
 //    ): Response<String>
 
     @GET("exec")
-    suspend fun obtenerRecojosPaginados(
+    suspend fun obtenerPaginados(
         @Query("action") action: String = "list",
         @Query("page") page: Int,
         @Query("limit") limit: Int,
         @Query("descen") descen: Int = 1
-    ): Response<PaginatedRecojosResponse>
+    ): Response<PaginationResponse<RegistroRecojoSimpleResponse>>
+
+//    @GET("exec")
+//    suspend fun obtenerPorId(
+//        @Query("action") action: String = "getById",
+//        @Query("id") id: String
+//    ): Response<RegistroRecojoSimpleResponse>
 
     @GET("exec")
-    suspend fun obtenerRecojoPorId(
-        @Query("action") action: String = "getById",
-        @Query("id") id: String
-    ): Response<RegistroRecojoResponse>
-
-    @GET("exec")
-    suspend fun obtenerRecojosPorTecnico(
+    suspend fun obtenerPorTecnico(
         @Query("action") action: String = "getByTecnico",
         @Query("tecnico") tecnico: String
-    ): Response<List<RegistroRecojoResponse>>
+    ): Response<List<RegistroRecojoSimpleResponse>>
 }
