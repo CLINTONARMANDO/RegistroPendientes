@@ -12,10 +12,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.clindevstu.registropendientes.ui.components.CTextInput
+import com.clindevstu.registropendientes.ui.navigation.NavRoute
 
 @Composable
 fun ScreenLogin (navController: NavHostController){
@@ -33,11 +36,20 @@ fun ScreenLogin (navController: NavHostController){
 @Composable
 fun LoginScreen (navController: NavHostController, viewModel: LoginViewModel){
 
+    val context = LocalContext.current // <- necesario para DataStore
     val usuario by viewModel.usuario.collectAsState()
     val password by viewModel.password.collectAsState()
     val usuarioError by viewModel.usuarioError.collectAsState()
     val passwordError by viewModel.passwordError.collectAsState()
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(state) {
+        if (state is LoginState.Success) {
+            navController.navigate(NavRoute.PanelCentral.route) {
+                popUpTo(NavRoute.Login.route) { inclusive = true }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -72,29 +84,25 @@ fun LoginScreen (navController: NavHostController, viewModel: LoginViewModel){
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                viewModel.validarUsuarioError()
-                viewModel.validarPasswordError()
-                viewModel.login()
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Ingresar")
+        if (state is LoginState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+        } else {
+            Button(
+                onClick = { viewModel.login(context) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ingresar")
+            }
         }
 
-        when (state) {
-            is LoginState.Error -> {
-                Text(
-                    text = (state as LoginState.Error).message,
-                    color = Color.Red,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-            }
-            LoginState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
-            }
-            else -> {}
+        if (state is LoginState.Error) {
+            Text(
+                text = (state as LoginState.Error).message,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 16.dp)
+            )
         }
+
+
     }
 }

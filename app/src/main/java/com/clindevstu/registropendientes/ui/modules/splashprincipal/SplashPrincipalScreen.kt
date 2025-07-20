@@ -1,19 +1,28 @@
 package com.clindevstu.registropendientes.ui.modules.splashprincipal
 
+import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import com.clindevstu.registropendientes.ui.navigation.NavRoute
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
+import com.clindevstu.registropendientes.data.preferences.UserPreferences
+import com.clindevstu.registropendientes.ui.navigation.NavRoute
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @Composable
-fun ScreenSplashPrincipal(navController:NavHostController){
-    val viewmodel : SplashPrincipalViewModel = hiltViewModel()
-    SplashPrincipalScreen(navController, viewmodel)
+fun ScreenSplashPrincipal(navController: NavHostController) {
+    val viewModel: SplashPrincipalViewModel = hiltViewModel()
+    SplashPrincipalScreen(navController, viewModel)
 }
 
 @Composable
@@ -30,9 +39,16 @@ fun SplashPrincipalScreen(
         }
 
         is SplashPrincipalState.Success -> {
-            // Navegamos cuando sea success
             LaunchedEffect(Unit) {
                 navController.navigate(NavRoute.PanelCentral.route) {
+                    popUpTo(NavRoute.SplashScreen.route) { inclusive = true }
+                }
+            }
+        }
+
+        is SplashPrincipalState.GoLogin -> {
+            LaunchedEffect(Unit) {
+                navController.navigate(NavRoute.Login.route) {
                     popUpTo(NavRoute.SplashScreen.route) { inclusive = true }
                 }
             }

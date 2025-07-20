@@ -1,12 +1,18 @@
 package com.clindevstu.registropendientes.ui.modules.registrocamaras
 
 import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.clindevstu.registropendientes.core.models.responses.PaginationResponse
 import com.clindevstu.registropendientes.core.models.responses.RegistroCamarasSimpleResponse
+import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
+import com.clindevstu.registropendientes.data.preferences.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RegistroCamarasViewModel @Inject constructor(
@@ -111,6 +117,26 @@ class RegistroCamarasViewModel @Inject constructor(
 
     private val _listaRegistroCamaras = MutableStateFlow<List<RegistroCamarasSimpleResponse>?>(null)
     val listaRegistroCamaras: StateFlow<List<RegistroCamarasSimpleResponse>?> = _listaRegistroCamaras
+
+    // VARIABLES DE CONTEXTO
+
+    private val _usuario = MutableStateFlow<UsuarioResponse>(UsuarioResponse())
+    val usuario: StateFlow<UsuarioResponse> = _usuario.asStateFlow()
+
+    private val _userPreferences = MutableStateFlow<UserPreferences?>(null)
+    val userPreferences: StateFlow<UserPreferences?> = _userPreferences.asStateFlow()
+
+    // FUNCION DE CONTEXTO
+
+    fun obtenerContexto(context: Context){
+
+        _userPreferences.value =  UserPreferences(context)
+        viewModelScope.launch {
+            _userPreferences.value?.userData?.collect { user ->
+                _usuario.value = user
+            }
+        }
+    }
 
 
     // FUNCIONES DE CAMBIO DE VALORES DE VARIABLES

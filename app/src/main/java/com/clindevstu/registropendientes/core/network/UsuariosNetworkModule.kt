@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -18,6 +19,7 @@ object UsuariosNetworkModule {
 
     @Provides
     @Singleton
+    @Named("UsuarioClient")
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             // Agrega interceptores si necesitas
@@ -26,7 +28,8 @@ object UsuariosNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit {
+    @Named("UsuarioRetrofit")
+    fun provideRetrofit(@Named("UsuarioClient") client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(GlobalVars.USUARIOS_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -36,7 +39,7 @@ object UsuariosNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRegistroInternetService(retrofit: Retrofit): UsuariosService {
+    fun provideRegistroInternetService(@Named("UsuarioRetrofit") retrofit: Retrofit): UsuariosService {
         return retrofit.create(UsuariosService::class.java)
     }
 }

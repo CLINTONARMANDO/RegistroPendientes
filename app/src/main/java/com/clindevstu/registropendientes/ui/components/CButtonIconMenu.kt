@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.clindevstu.registropendientes.R
+import com.clindevstu.registropendientes.ui.theme.RegistroPendientesTheme
 
 @Composable
 fun CButtonIconMenu(
@@ -37,7 +38,9 @@ fun CButtonIconMenu(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.width(64.dp) // Fuerza el mismo ancho que el botón
+        modifier = modifier
+            .padding(4.dp)
+            .fillMaxWidth() // Permite que use
     ) {
         Button(
             onClick = onClick,
@@ -46,26 +49,26 @@ fun CButtonIconMenu(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ),
-            contentPadding = PaddingValues(0.dp),
+            contentPadding = PaddingValues(12.dp),
             modifier = Modifier
-                .size(64.dp) // Botón cuadrado
+                .size(80.dp) // Aumentado
         ) {
             Icon(
                 painter = icon,
                 contentDescription = null,
-                modifier = Modifier.size(32.dp), // Tamaño del ícono ideal dentro del botón
-                tint = LocalContentColor.current
+                modifier = Modifier.size(40.dp), // Aumentado
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = text,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth() // Asegura que el texto se centre
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -76,7 +79,7 @@ fun CButtonIconMenu(
 @Preview(showBackground = true)
 @Composable
 fun PreviewCButtonIconMenu() {
-    MaterialTheme {
+    RegistroPendientesTheme (darkTheme = true) {
         Surface {
             CButtonIconMenu(
                 text = "Registro Internet",

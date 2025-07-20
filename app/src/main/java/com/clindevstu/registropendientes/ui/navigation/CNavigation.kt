@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.clindevstu.registropendientes.ui.modules.login.ScreenLogin
 import com.clindevstu.registropendientes.ui.modules.panelcentral.ScreenPanelCentral
 import com.clindevstu.registropendientes.ui.modules.panelcentral.configuraciones.ScreenConfiguraciones
@@ -16,7 +17,9 @@ import com.clindevstu.registropendientes.ui.modules.registrorecojo.ScreenRegistr
 import com.clindevstu.registropendientes.ui.modules.splashprincipal.ScreenSplashPrincipal
 
 @Composable
-fun AppNavGraph(navController: NavHostController) {
+fun CNavigation() {
+
+    val navController = rememberNavController()
     NavHost(navController = navController, startDestination = NavRoute.SplashScreen.route) {
         composable(NavRoute.SplashScreen.route) {
             ScreenSplashPrincipal(navController)

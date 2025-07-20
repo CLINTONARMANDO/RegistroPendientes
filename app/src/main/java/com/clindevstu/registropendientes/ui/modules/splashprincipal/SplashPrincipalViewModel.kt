@@ -5,10 +5,12 @@ import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.clindevstu.registropendientes.data.preferences.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +22,8 @@ class SplashPrincipalViewModel @Inject constructor(
     private val _state = MutableStateFlow<SplashPrincipalState>(SplashPrincipalState.Init)
     val state: StateFlow<SplashPrincipalState> = _state
 
+    private val userPreferences = UserPreferences(application)
+
     init {
         startSplash()
     }
@@ -28,18 +32,22 @@ class SplashPrincipalViewModel @Inject constructor(
         _state.value = SplashPrincipalState.Loading
 
         viewModelScope.launch {
-            // Simular carga
-            delay(3000)
+            // Simular splash con delay
+            delay(1500)
 
-            // Ejemplo: leer algo de SharedPreferences si quisieras
-            val prefs = getApplication<Application>()
-                .getSharedPreferences("prefs", Context.MODE_PRIVATE)
-            val usuario = prefs.getString("username", null)
+            try {
+                // Leer usuario de DataStore
+                val usuario = userPreferences.userData.first()
 
-            if (usuario.isNullOrEmpty()) {
-                _state.value = SplashPrincipalState.Success // O Error si quieres
-            } else {
-                _state.value = SplashPrincipalState.Success
+                if (usuario.token.isNullOrEmpty()) {
+                    // No hay token, navegar a Login
+                    _state.value = SplashPrincipalState.GoLogin
+                } else {
+                    // Hay token, navegar al Panel
+                    _state.value = SplashPrincipalState.Success
+                }
+            } catch (e: Exception) {
+                _state.value = SplashPrincipalState.Error("Error leyendo usuario: ${e.localizedMessage}")
             }
         }
     }

@@ -1,17 +1,31 @@
 package com.clindevstu.registropendientes.ui.modules.registrointernet
 
 import android.app.Application
+import android.content.Context
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.clindevstu.registropendientes.core.models.responses.RegistroInternetSimpleResponse
+import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
+import com.clindevstu.registropendientes.data.preferences.UserPreferences
+import com.clindevstu.registropendientes.domain.usecase.LoginUseCase
+import com.clindevstu.registropendientes.domain.usecase.RegistroInternetUseCase
+import com.clindevstu.registropendientes.ui.modules.login.LoginState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
 class RegistroInternetViewModel @Inject constructor(
-    application: Application
-) : AndroidViewModel(application) {
+    private val useCase: RegistroInternetUseCase,
+) : ViewModel() {
 
     private var _state = MutableStateFlow<RegistroInternetState>(RegistroInternetState.Init)
     val state: StateFlow<RegistroInternetState> = _state
@@ -57,8 +71,6 @@ class RegistroInternetViewModel @Inject constructor(
     private val _selectedPrioridad = MutableStateFlow<String?>(null)
     val selectedPrioridad: StateFlow<String?> = _selectedPrioridad.asStateFlow()
 
-
-
     // ERRORES
 
     private val _codigoRegistroError = MutableStateFlow<String?>(null)
@@ -99,6 +111,56 @@ class RegistroInternetViewModel @Inject constructor(
 
     private val _selectedPrioridadError = MutableStateFlow<String?>(null)
     val selectedPrioridadError: StateFlow<String?> = _selectedPrioridadError.asStateFlow()
+
+    // VARIABLES REGISTROS
+
+    private val _listaRegistros = MutableStateFlow<List<RegistroInternetSimpleResponse>>(emptyList())
+    val listaRegistros: StateFlow<List<RegistroInternetSimpleResponse>> = _listaRegistros
+
+    private val _pagina = MutableStateFlow<Int>(1)
+    val pagina: StateFlow<Int> = _pagina
+
+    private val _limite = MutableStateFlow<Int>(10)
+    val limite: StateFlow<Int> = _limite
+
+    private val _orden = MutableStateFlow<Int>(1)
+    val orden: StateFlow<Int> = _orden
+
+    // VARIABLES DE CONTEXTO
+
+    private val _usuario = MutableStateFlow<UsuarioResponse>(UsuarioResponse())
+    val usuario: StateFlow<UsuarioResponse> = _usuario.asStateFlow()
+
+    private val _userPreferences = MutableStateFlow<UserPreferences?>(null)
+    val userPreferences: StateFlow<UserPreferences?> = _userPreferences.asStateFlow()
+
+
+    fun obtenerContexto(context: Context){
+
+        _userPreferences.value =  UserPreferences(context)
+        viewModelScope.launch {
+            _userPreferences.value?.userData?.collect { user ->
+                _usuario.value = user
+            }
+        }
+    }
+
+    // FUNCIONES DE OBTENCION DE REGISTROS
+
+    fun obtenerRegistros(){
+        if (_usuario.value.esTecnico == true){
+            viewModelScope.launch {
+                _state.value = RegistroInternetState.Loading
+                useCase.obtenerPorTecnico(_usuario.value.nombreTecnico.toString())
+            }
+        }
+        else {
+            viewModelScope.launch {
+                _state.value = RegistroInternetState.Loading
+                useCase.obtenerPaginados(_pagina.value,_limite.value, _orden.value)
+            }
+        }
+    }
 
     // FUNCIONES DE CAMBIO DE VARIBLES DE FORMULARIO
 

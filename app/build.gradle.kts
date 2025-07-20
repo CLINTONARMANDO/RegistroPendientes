@@ -89,4 +89,5 @@ dependencies {
 
     // Compose integration (si usas collectAsState())
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.datastore.preferences)
 }

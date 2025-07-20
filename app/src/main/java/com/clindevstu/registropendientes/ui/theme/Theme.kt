@@ -60,8 +60,10 @@ private val LightColorScheme = lightColorScheme(
     surface = Blanco,
     onSurface = Negro,
 
-    surfaceVariant = Lila,
-    onSurfaceVariant = Negro
+    surfaceVariant = VerdeOscuro,
+    onSurfaceVariant = VerdeMusgo,
+
+
 )
 
 

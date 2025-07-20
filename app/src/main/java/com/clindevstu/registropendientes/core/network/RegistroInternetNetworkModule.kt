@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -18,6 +19,7 @@ object RegistroInternetNetworkModule {
 
     @Provides
     @Singleton
+    @Named("InternetClient")
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             // Agrega interceptores si necesitas
@@ -26,7 +28,8 @@ object RegistroInternetNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit {
+    @Named("InternetRetrofit")
+    fun provideRetrofit(@Named("InternetClient") client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(GlobalVars.REGISTROINTERNET_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -36,7 +39,7 @@ object RegistroInternetNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRegistroInternetService(retrofit: Retrofit): RegistroInternetService {
+    fun provideRegistroInternetService(@Named("InternetRetrofit") retrofit: Retrofit): RegistroInternetService {
         return retrofit.create(RegistroInternetService::class.java)
     }
 }

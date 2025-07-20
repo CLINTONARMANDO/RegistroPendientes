@@ -1,11 +1,17 @@
 package com.clindevstu.registropendientes.ui.modules.registrorecojo
 
 import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
+import com.clindevstu.registropendientes.data.preferences.UserPreferences
 import com.clindevstu.registropendientes.ui.modules.registrocamaras.RegistroCamarasState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class RegistroRecojoViewModel @Inject constructor(
@@ -91,6 +97,26 @@ class RegistroRecojoViewModel @Inject constructor(
 
     private val _paraElDiaError = MutableStateFlow<String?>(null)
     val paraElDiaError: StateFlow<String?> = _paraElDiaError
+
+    // VARIABLES DE CONTEXTO
+
+    private val _usuario = MutableStateFlow<UsuarioResponse>(UsuarioResponse())
+    val usuario: StateFlow<UsuarioResponse> = _usuario.asStateFlow()
+
+    private val _userPreferences = MutableStateFlow<UserPreferences?>(null)
+    val userPreferences: StateFlow<UserPreferences?> = _userPreferences.asStateFlow()
+
+    // FUNCION DE CONTEXTO
+
+    fun obtenerContexto(context: Context){
+
+        _userPreferences.value =  UserPreferences(context)
+        viewModelScope.launch {
+            _userPreferences.value?.userData?.collect { user ->
+                _usuario.value = user
+            }
+        }
+    }
 
 
 

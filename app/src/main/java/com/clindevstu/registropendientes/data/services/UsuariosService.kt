@@ -15,5 +15,5 @@ interface UsuariosService {
     suspend fun loginUsuario(
         @Query("nombre") nombre: String,
         @Query("contrasena") contrasena: String
-    ): Response<ErrorResponse<UsuarioResponse>>
+    ): ErrorResponse<UsuarioResponse>
 }

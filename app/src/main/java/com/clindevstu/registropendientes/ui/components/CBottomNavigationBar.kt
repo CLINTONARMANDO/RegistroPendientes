@@ -1,7 +1,10 @@
 package com.clindevstu.registropendientes.ui.components
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -11,29 +14,30 @@ import com.clindevstu.registropendientes.ui.modules.panelcentral.BottomNavItem
 import com.clindevstu.registropendientes.ui.theme.RegistroPendientesTheme
 
 @Composable
-fun CBottomNavigationBar(navController: NavHostController) {
+fun CBottomNavigationBar(
+    selectedItem: BottomNavItem,
+    onItemSelected: (BottomNavItem) -> Unit
+) {
     val items = listOf(
-        BottomNavItem.PanelPrincipal,
         BottomNavItem.Notificaciones,
+        BottomNavItem.PanelPrincipal,
         BottomNavItem.Configuraciones
     )
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.primary, // Color de fondo personalizado
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        containerColor = MaterialTheme.colorScheme.primary, // mejor coherencia con M3
         tonalElevation = 4.dp
     ) {
         items.forEach { item ->
-            val isSelected = currentRoute == item.route
+            val isSelected = item == selectedItem
 
             NavigationBarItem(
+                modifier = Modifier.padding(top = 16.dp),
                 icon = {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.label,
+                        modifier = Modifier.size(35.dp),
                         tint = if (isSelected)
                             MaterialTheme.colorScheme.primary
                         else
@@ -43,29 +47,18 @@ fun CBottomNavigationBar(navController: NavHostController) {
                 label = {
                     Text(
                         text = item.label,
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.titleMedium,
                         color = if (isSelected)
-                            MaterialTheme.colorScheme.primary
+                            MaterialTheme.colorScheme.onSurface
                         else
                             MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 selected = isSelected,
-                onClick = {
-                    // Si ya estás en la ruta, no navegues de nuevo
-                    if (!isSelected) {
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                },
+                onClick = { onItemSelected(item) },
                 alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                    indicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     selectedIconColor = MaterialTheme.colorScheme.primary,
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     selectedTextColor = MaterialTheme.colorScheme.primary,
@@ -76,12 +69,15 @@ fun CBottomNavigationBar(navController: NavHostController) {
     }
 }
 
-
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun PreviewCBottomNavigationBar() {
-    RegistroPendientesTheme {
-        val navController = rememberNavController()
-        CBottomNavigationBar(navController = navController)
+    RegistroPendientesTheme(darkTheme = true) {
+        var selectedItem by remember { mutableStateOf(BottomNavItem.PanelPrincipal) }
+
+        CBottomNavigationBar(
+            selectedItem = selectedItem,
+            onItemSelected = {  }
+        )
     }
 }

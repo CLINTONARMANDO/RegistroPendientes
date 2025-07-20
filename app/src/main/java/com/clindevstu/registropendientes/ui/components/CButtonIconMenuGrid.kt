@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -34,7 +35,7 @@ fun CButtonIconMenuGrid(
         for (rowIndex in 0 until rows) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 for (columnIndex in 0 until columns) {
                     val itemIndex = rowIndex * columns + columnIndex
@@ -67,7 +68,7 @@ fun CButtonIconMenuGridPreview() {
         Triple("Salir", rememberVectorPainter(Icons.Default.ExitToApp)) {}
     )
 
-    MaterialTheme {
+    MaterialTheme (darkColorScheme()) {
         Surface {
             CButtonIconMenuGrid(
                 items = items,

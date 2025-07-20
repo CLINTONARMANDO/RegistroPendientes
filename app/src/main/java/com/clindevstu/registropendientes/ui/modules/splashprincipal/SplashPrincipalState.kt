@@ -4,5 +4,6 @@ sealed class SplashPrincipalState {
     object Init : SplashPrincipalState()
     object Loading : SplashPrincipalState()
     object Success : SplashPrincipalState()
+    object GoLogin : SplashPrincipalState()
     data class Error(val message: String) : SplashPrincipalState()
 }

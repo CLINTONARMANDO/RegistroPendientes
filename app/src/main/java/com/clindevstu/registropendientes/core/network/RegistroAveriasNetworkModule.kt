@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -17,6 +18,7 @@ object RegistroAveriasNetworkModule {
 
     @Provides
     @Singleton
+    @Named("AveriasClient")
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             // Agrega interceptores si necesitas
@@ -25,7 +27,8 @@ object RegistroAveriasNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit {
+    @Named("AveriasRetrofit")
+    fun provideRetrofit(@Named("AveriasClient") client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(GlobalVars.REGISTROAVERIAS_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -35,7 +38,7 @@ object RegistroAveriasNetworkModule {
 
     @Provides
     @Singleton
-    fun provideRegistroInternetService(retrofit: Retrofit): RegistroAveriasService {
+    fun provideRegistroInternetService(@Named("AveriasRetrofit") retrofit: Retrofit): RegistroAveriasService {
         return retrofit.create(RegistroAveriasService::class.java)
     }
 }

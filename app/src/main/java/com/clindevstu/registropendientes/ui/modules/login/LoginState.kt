@@ -1,5 +1,7 @@
 package com.clindevstu.registropendientes.ui.modules.login
 
+import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
+
 sealed class LoginState {
 
     object Init : LoginState()
