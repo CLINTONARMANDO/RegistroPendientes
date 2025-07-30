@@ -1,0 +1,78 @@
+package com.clindevstu.registropendientes.ui.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material.ContentAlpha
+
+@Composable
+fun CTextInputHelpText(
+    value: String,
+    label: String,
+    onValueChange: (String) -> Unit,
+    helperText: String,
+    isSingleLine: Boolean = true,
+    modifier: Modifier = Modifier,
+    counterMaxLength: Int? = null
+) {
+    //var text by rememberSaveable { mutableStateOf(value) }
+    val isCounter = counterMaxLength != null
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {
+                if (counterMaxLength == null || it.length <= counterMaxLength) {
+                    onValueChange(it)
+                }
+            },
+            label = { Text(label, maxLines = 1) },
+            singleLine = isSingleLine,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = helperText,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.medium),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            if (isCounter) {
+                Text(
+                    text = "${value.length}/$counterMaxLength",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.medium),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
+//@Preview(showBackground = true)
+//@Composable
+//private fun PreviewVisualizacion(){
+//    CTextInputHelpText(
+//        value = "value",
+//        label = "label",
+//        onValueChange = {},
+//        isSingleLine = true,
+//        modifier = Modifier,
+//        counterMaxLength = 10,
+//        helperText = "helperText"
+//    )
+//}

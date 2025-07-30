@@ -4,21 +4,40 @@ import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.clindevstu.registropendientes.core.models.requests.RegistroAveriasRequest
+import com.clindevstu.registropendientes.core.models.responses.PaginationResponse
+import com.clindevstu.registropendientes.core.models.responses.RegistroAveriasCompletoResponse
+import com.clindevstu.registropendientes.core.models.responses.RegistroAveriasSimpleResponse
+import com.clindevstu.registropendientes.core.models.responses.RegistroRecojoSimpleResponse
 import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
 import com.clindevstu.registropendientes.data.preferences.UserPreferences
+import com.clindevstu.registropendientes.domain.usecase.RegistroAveriasUseCase
+import com.clindevstu.registropendientes.ui.modules.registroaverias.agregarregistroaverias.AgregarRegistroAveriasState
+import com.clindevstu.registropendientes.ui.modules.registroaverias.registroaveriasdetalle.RegistroAveriasDetalleState
+import com.clindevstu.registropendientes.ui.modules.registrorecojo.RegistroRecojoState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class RegistroAveriasViewModel @Inject constructor(
-    application: Application
-) : AndroidViewModel(application){
+    private val useCase: RegistroAveriasUseCase
+) : ViewModel(){
 
     private val _state = MutableStateFlow<RegistroAveriasState>(RegistroAveriasState.Init)
     val state: StateFlow<RegistroAveriasState> = _state
+
+    private var _stateAgregarRegistro = MutableStateFlow<AgregarRegistroAveriasState>(AgregarRegistroAveriasState.Init)
+    val stateAgregarRegistro: StateFlow<AgregarRegistroAveriasState> = _stateAgregarRegistro
+
+    private var _stateRegistroDetalle = MutableStateFlow<RegistroAveriasDetalleState>(RegistroAveriasDetalleState.Init)
+    val stateRegistroDetalle: StateFlow<RegistroAveriasDetalleState> = _stateRegistroDetalle
 
     // VARIABLES FORMULARIO
 
@@ -61,6 +80,12 @@ class RegistroAveriasViewModel @Inject constructor(
     private val _selectedParaElDia = MutableStateFlow<String?>(null)
     val selectedParaElDia: StateFlow<String?> = _selectedParaElDia
 
+    private val _celular2 = MutableStateFlow<String?>(null)
+    val celular2: StateFlow<String?> = _celular2
+
+    private val _referencia = MutableStateFlow<String?>(null)
+    val referencia: StateFlow<String?> = _referencia
+
     // ERRORES
 
     private val _codigoRegistroError = MutableStateFlow<String?>(null)
@@ -102,6 +127,41 @@ class RegistroAveriasViewModel @Inject constructor(
     private val _selectedParaElDiaError = MutableStateFlow<String?>(null)
     val selectedParaElDiaError: StateFlow<String?> = _selectedParaElDiaError
 
+    private val _celular2Error = MutableStateFlow<String?>(null)
+    val celular2Error: StateFlow<String?> = _celular2Error
+
+    private val _referenciaError = MutableStateFlow<String?>(null)
+    val referenciaError: StateFlow<String?> = _referenciaError
+
+    // VARIABLES REGISTROS
+
+    private val _listaRegistros = MutableStateFlow<List<RegistroAveriasSimpleResponse>>(emptyList())
+    val listaRegistros: StateFlow<List<RegistroAveriasSimpleResponse>> = _listaRegistros
+
+    private val _pagina = MutableStateFlow<Int>(1)
+    val pagina: StateFlow<Int> = _pagina
+
+    private val _pageSize = MutableStateFlow<Int>(10)
+    val pageSize: StateFlow<Int> = _pageSize
+
+    private val _orden = MutableStateFlow<Int>(0)
+    val orden: StateFlow<Int> = _orden
+
+    private val _totalPages = MutableStateFlow<Int>(1)
+    val totalPages: StateFlow<Int> = _totalPages
+
+    private val _totalItems = MutableStateFlow<Int>(1)
+    val totalItems: StateFlow<Int> = _totalItems
+
+    private val _hasNextPage = MutableStateFlow<Boolean>(false)
+    val hasNextPage: StateFlow<Boolean> = _hasNextPage
+
+    private val _hasPreviousPage = MutableStateFlow<Boolean>(false)
+    val hasPreviousPage: StateFlow<Boolean> = _hasPreviousPage
+
+    private val _registroDetalle = MutableStateFlow<RegistroAveriasCompletoResponse?>(null)
+    val registroDetalle: StateFlow<RegistroAveriasCompletoResponse?> = _registroDetalle
+
     // VARIABLES DE CONTEXTO
 
     private val _usuario = MutableStateFlow<UsuarioResponse>(UsuarioResponse())
@@ -110,7 +170,15 @@ class RegistroAveriasViewModel @Inject constructor(
     private val _userPreferences = MutableStateFlow<UserPreferences?>(null)
     val userPreferences: StateFlow<UserPreferences?> = _userPreferences.asStateFlow()
 
-    // FUNCION DE CONTEXTO
+    // VARIABLES DE DIALOGS
+
+    private val _isAgregarDialogActive = MutableStateFlow<Boolean>(false)
+    val isAgregarDialogActive: StateFlow<Boolean> = _isAgregarDialogActive
+
+    private val _isDetalleDialogActive = MutableStateFlow<Boolean>(false)
+    val isDetalleDialogActive: StateFlow<Boolean> = _isDetalleDialogActive
+
+
 
     fun obtenerContexto(context: Context){
 
@@ -118,6 +186,97 @@ class RegistroAveriasViewModel @Inject constructor(
         viewModelScope.launch {
             _userPreferences.value?.userData?.collect { user ->
                 _usuario.value = user
+            }
+        }
+    }
+
+    // FUNCIONES DE OBTENCION DE REGISTROS
+
+    fun obtenerRegistros() {
+        viewModelScope.launch {
+            val user = _userPreferences.value?.userData?.firstOrNull()
+            if (user != null) {
+                _usuario.value = user
+            }
+            _state.value = RegistroAveriasState.Loading
+
+            val resultado: Result<PaginationResponse<RegistroAveriasSimpleResponse>> =
+                if (_usuario.value.esTecnico == true) {
+                    useCase.obtenerPaginados(_usuario.value.nombreTecnico.orEmpty())
+                } else {
+                    useCase.obtenerPaginados(_pagina.value, _pageSize.value, _orden.value)
+                }
+
+            if (resultado.isSuccess) {
+                val paginacion = resultado.getOrNull()
+                _listaRegistros.value = paginacion?.data ?: emptyList()
+                _totalItems.value = paginacion?.totalItems ?: 0
+                _totalPages.value = paginacion?.totalPages ?: 1
+                _hasNextPage.value = paginacion?.hasNextPage ?: false
+                _hasPreviousPage.value = paginacion?.hasPreviousPage ?: false
+
+                _state.value = RegistroAveriasState.Success
+            } else {
+                _state.value = RegistroAveriasState.Error(
+                    resultado.exceptionOrNull()?.localizedMessage ?: "Error desconocido"
+                )
+            }
+        }
+    }
+
+    fun obtenerRegistroDetalle(id: String) {
+        viewModelScope.launch {
+            _stateRegistroDetalle.value = RegistroAveriasDetalleState.Loading
+
+            val resultado = useCase.obtenerPorId(id)
+
+            if (resultado.isSuccess) {
+                val data = resultado.getOrNull()
+                if (data != null) {
+                    _registroDetalle.value = data
+                    _stateRegistroDetalle.value = RegistroAveriasDetalleState.Success
+                } else {
+                    _stateRegistroDetalle.value = RegistroAveriasDetalleState.Error("Respuesta vacía del servidor")
+                }
+            } else {
+                _stateRegistroDetalle.value = RegistroAveriasDetalleState.Error(
+                    resultado.exceptionOrNull()?.localizedMessage ?: "Error desconocido"
+                )
+            }
+        }
+    }
+
+    fun crearNuevoRegistro() {
+        viewModelScope.launch {
+            _stateAgregarRegistro.value = AgregarRegistroAveriasState.Loading
+
+
+            val request = RegistroAveriasRequest(
+                codigoGrande  = _codigoRegistro.value,
+                asesor        = _selectedAsesor.value,
+                empresa       = _selectedEmpresa.value,
+                tipo          = _selectedTipoRegistro.value,
+                nombreCliente = _nombreCliente.value,
+                codigoCliente = _codigoUsuario.value,
+                direccion     = _direccion.value,
+                referencia    = _referencia.value,   // Falta definir MutableStateFlow<String?> para referencia
+                lugar         = _selectedCiudadZona.value,
+                celular       = _celular.value,
+                celular2      = _celular2.value,    // Falta definir MutableStateFlow<String?> para celular2
+                fechaRegistro = _selectedFechaRegistro.value,
+                interaccion   = _descripcion.value,
+                prioridad     = _selectedPrioridad.value
+            )
+
+            val resultado = useCase.crearNuevoRegistro(request)
+
+            if (resultado.isSuccess) {
+                val mensaje = resultado.getOrNull()?.mensaje
+                _stateAgregarRegistro.value = AgregarRegistroAveriasState.Success
+            } else {
+                _stateAgregarRegistro.value = AgregarRegistroAveriasState.Error(
+                    resultado.exceptionOrNull()?.localizedMessage ?: "Error desconocido al registrar."
+                )
             }
         }
     }
@@ -177,7 +336,24 @@ class RegistroAveriasViewModel @Inject constructor(
         _selectedParaElDia.value = value
     }
 
+    fun onCelular2Change(value: String) {
+        _celular2.value = value
+    }
+
+    fun onReferenciaChange(value: String) {
+        _referencia.value = value
+    }
+
+    fun onAgregarDialogChange(value: Boolean) {
+        _isAgregarDialogActive.value = value
+    }
+
+    fun onDetalleDialogChange(value: Boolean) {
+        _isDetalleDialogActive.value = value
+    }
+
     // FUNCIONES DE VALIDACION PARA ERRORES
+
     fun validarCodigoRegistro() {
         _codigoRegistroError.value = if (_codigoRegistro.value.isNullOrBlank()) "El código de registro es obligatorio" else null
     }
@@ -228,6 +404,18 @@ class RegistroAveriasViewModel @Inject constructor(
 
     fun validarSelectedParaElDia() {
         _selectedParaElDiaError.value = if (_selectedParaElDia.value.isNullOrBlank()) "Debe seleccionar un día" else null
+    }
+
+    fun validarReferencia() {
+        _referenciaError.value = if (_referencia.value.isNullOrBlank()) "La fecha de recojo es obligatoria" else null
+    }
+
+    fun validarCelular2() {
+        _celular2Error.value = if (_celular2.value.isNullOrBlank()) "Debe indicar si es para el día" else null
+    }
+
+    fun resetStateAgregarRegistro() {
+        _stateAgregarRegistro.value = AgregarRegistroAveriasState.Init
     }
 
 }

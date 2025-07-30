@@ -1,6 +1,7 @@
 package com.clindevstu.registropendientes.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +37,7 @@ fun CTopBar(
         },
         actions = {
             IconButton(onClick = onRightClick) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
+                Icon(Icons.Default.AccountBox, contentDescription = "Settings")
             }
         }
     )

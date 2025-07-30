@@ -22,9 +22,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.clindevstu.registropendientes.ui.components.CTextInput
+import com.clindevstu.registropendientes.ui.components.CTextInputSimple
 import com.clindevstu.registropendientes.ui.navigation.NavRoute
 
 @Composable
@@ -34,14 +34,16 @@ fun ScreenLogin (navController: NavHostController){
 }
 
 @Composable
-fun LoginScreen (navController: NavHostController, viewModel: LoginViewModel){
-
-    val context = LocalContext.current // <- necesario para DataStore
+fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel) {
+    val context = LocalContext.current
     val usuario by viewModel.usuario.collectAsState()
     val password by viewModel.password.collectAsState()
     val usuarioError by viewModel.usuarioError.collectAsState()
     val passwordError by viewModel.passwordError.collectAsState()
     val state by viewModel.state.collectAsState()
+
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
 
     LaunchedEffect(state) {
         if (state is LoginState.Success) {
@@ -59,7 +61,8 @@ fun LoginScreen (navController: NavHostController, viewModel: LoginViewModel){
     ) {
         Text(
             text = "Iniciar sesión",
-            style = MaterialTheme.typography.titleLarge,
+            style = typography.titleLarge,
+            color = colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -85,11 +88,18 @@ fun LoginScreen (navController: NavHostController, viewModel: LoginViewModel){
         Spacer(modifier = Modifier.height(16.dp))
 
         if (state is LoginState.Loading) {
-            CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            CircularProgressIndicator(
+                modifier = Modifier.padding(top = 16.dp),
+                color = colorScheme.primary
+            )
         } else {
             Button(
                 onClick = { viewModel.login(context) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = colorScheme.primary,
+                    contentColor = colorScheme.onPrimary
+                )
             ) {
                 Text("Ingresar")
             }
@@ -98,11 +108,11 @@ fun LoginScreen (navController: NavHostController, viewModel: LoginViewModel){
         if (state is LoginState.Error) {
             Text(
                 text = (state as LoginState.Error).message,
-                color = Color.Red,
+                color = colorScheme.error,
+                style = typography.bodyMedium,
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
-
-
     }
 }
+

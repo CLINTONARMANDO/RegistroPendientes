@@ -17,5 +17,7 @@ data class RegistroCamarasSimpleResponse(
     @SerializedName("productos") val productos: String?,
     @SerializedName("total") val total: String?,
     @SerializedName("adelanto") val adelanto: String?,
-    @SerializedName("saldo") val saldo: String?
+    @SerializedName("saldo") val saldo: String?,
+    @SerializedName("tecnico") val tecnico: String?,
+    @SerializedName("estado") val estado: String?
 )

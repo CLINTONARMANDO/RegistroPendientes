@@ -1,24 +1,18 @@
 package com.clindevstu.registropendientes.ui.components
 
-import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -26,7 +20,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ContentAlpha
 
@@ -72,7 +65,7 @@ fun CTextInput(
 //        Color.Transparent
 //    }
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth().padding(1.dp)) {
         OutlinedTextField(
             value = value,
             onValueChange = {
@@ -103,7 +96,9 @@ fun CTextInput(
             visualTransformation = visualTransformation,
             isError = isError,
             modifier = Modifier
+                .padding(bottom = 0.dp, top = 0.dp)
                 .fillMaxWidth()
+                .defaultMinSize(minHeight = 56.dp)
                 .background(brush = backgroundBrush)
         )
         Row(
@@ -112,12 +107,12 @@ fun CTextInput(
                 .padding(start = 16.dp, top = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            if (isError) {
+            if (!error.isNullOrBlank()) {
                 Text(
-                    text = error ?: "",
-                    maxLines = 1,
+                    text = error,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 16.dp, top = 2.dp)
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -131,22 +126,20 @@ fun CTextInput(
         }
     }
 }
-@Preview(showBackground = true)
-@Composable
-fun PreviewCTextInput() {
-    MaterialTheme {
-        Surface(modifier = Modifier.padding(16.dp)) {
-            var text by remember { mutableStateOf("adfasdfasdfasdfsadfsadfasdfasda") }
-
-            CTextInput(
-                value = text,
-                label = "Usuario",
-                onValueChange = { text = it },
-                error = if (text.length > 10) "Demasiado largo" else null,
-                counterMaxLength = 20,
-                keyboardType = KeyboardType.Text
-            )
-        }
-    }
-}
-
+//@Preview (showBackground = true)
+//@Composable
+//private fun PreviewVisualizacion(){
+//    HCTextInput(
+//        value = "Este es un valor de prueba",
+//        label = "Encabezado",
+//        onValueChange = {},
+//        error = "Este campo es requerido",
+//        isSingleLine = true,
+//        keyboardType = KeyboardType.Text,
+//        modifier = Modifier,
+//        counterMaxLength = 100,
+//        readOnly = false,
+//        enabled = true,
+//        textAlign = TextAlign.Start
+//    )
+//}

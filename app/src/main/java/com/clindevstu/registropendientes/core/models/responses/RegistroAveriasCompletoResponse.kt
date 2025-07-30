@@ -16,5 +16,7 @@ data class RegistroAveriasCompletoResponse (
     @SerializedName("fecha_registro") val fechaRegistro: String?,
     @SerializedName("prioridad") val prioridad: String?,
     @SerializedName("tipo") val tipoRegistro: String?,
-    @SerializedName("para_el_dia") val paraElDia: String?
+    @SerializedName("para_el_dia") val paraElDia: String?,
+    @SerializedName("tecnico") val tecnico: String?,
+    @SerializedName("estado") val estado: String?
 )

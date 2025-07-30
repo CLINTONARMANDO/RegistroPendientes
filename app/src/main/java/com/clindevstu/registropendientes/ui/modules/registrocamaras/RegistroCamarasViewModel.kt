@@ -4,23 +4,40 @@ import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.clindevstu.registropendientes.core.models.requests.RegistroCamarasRequest
 import com.clindevstu.registropendientes.core.models.responses.PaginationResponse
+import com.clindevstu.registropendientes.core.models.responses.RegistroCamarasCompletoResponse
 import com.clindevstu.registropendientes.core.models.responses.RegistroCamarasSimpleResponse
+import com.clindevstu.registropendientes.core.models.responses.RegistroInternetSimpleResponse
 import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
 import com.clindevstu.registropendientes.data.preferences.UserPreferences
+import com.clindevstu.registropendientes.domain.usecase.RegistroCamarasUseCase
+import com.clindevstu.registropendientes.ui.modules.registrocamaras.agregarregistrocamaras.AgregarRegistroCamarasState
+import com.clindevstu.registropendientes.ui.modules.registrocamaras.registrocamarasdetalle.RegistroCamarasDetalleState
+import com.clindevstu.registropendientes.ui.modules.registrointernet.RegistroInternetState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class RegistroCamarasViewModel @Inject constructor(
-    application: Application
-) : AndroidViewModel(application) {
+    private val useCase: RegistroCamarasUseCase
+) : ViewModel() {
 
     private var _state = MutableStateFlow<RegistroCamarasState>(RegistroCamarasState.Init)
     val state: StateFlow<RegistroCamarasState> = _state
+
+    private var _stateAgregarRegistro = MutableStateFlow<AgregarRegistroCamarasState>(AgregarRegistroCamarasState.Init)
+    val stateAgregarRegistro: StateFlow<AgregarRegistroCamarasState> = _stateAgregarRegistro
+
+    private var _stateRegistroDetalle = MutableStateFlow<RegistroCamarasDetalleState>(RegistroCamarasDetalleState.Init)
+    val stateRegistroDetalle: StateFlow<RegistroCamarasDetalleState> = _stateRegistroDetalle
 
     // VARIABLES FORMULARIO
 
@@ -66,6 +83,12 @@ class RegistroCamarasViewModel @Inject constructor(
     private val _selectedAsesor = MutableStateFlow<String?>(null)
     val selectedAsesor: StateFlow<String?> = _selectedAsesor
 
+    private val _celular2 = MutableStateFlow<String?>(null)
+    val celular2: StateFlow<String?> = _celular2
+
+    private val _referencia = MutableStateFlow<String?>(null)
+    val referencia: StateFlow<String?> = _referencia
+
     // ERRORES
 
     private val _nombreClienteError = MutableStateFlow<String?>(null)
@@ -110,13 +133,40 @@ class RegistroCamarasViewModel @Inject constructor(
     private val _selectedAsesorError = MutableStateFlow<String?>(null)
     val selectedAsesorError: StateFlow<String?> = _selectedAsesorError
 
-    // DATOS PARA MOSTRAR
+    private val _celular2Error = MutableStateFlow<String?>(null)
+    val celular2Error: StateFlow<String?> = _celular2Error
 
-    private val _paginaRegistroCamaras = MutableStateFlow<PaginationResponse<RegistroCamarasSimpleResponse>?>(null)
-    val paginaRegistroCamaras: StateFlow<PaginationResponse<RegistroCamarasSimpleResponse>?> = _paginaRegistroCamaras
+    private val _referenciaError = MutableStateFlow<String?>(null)
+    val referenciaError: StateFlow<String?> = _referenciaError
 
-    private val _listaRegistroCamaras = MutableStateFlow<List<RegistroCamarasSimpleResponse>?>(null)
-    val listaRegistroCamaras: StateFlow<List<RegistroCamarasSimpleResponse>?> = _listaRegistroCamaras
+    // VARIABLES REGISTROS
+
+    private val _listaRegistros = MutableStateFlow<List<RegistroCamarasSimpleResponse>>(emptyList())
+    val listaRegistros: StateFlow<List<RegistroCamarasSimpleResponse>> = _listaRegistros
+
+    private val _pagina = MutableStateFlow<Int>(1)
+    val pagina: StateFlow<Int> = _pagina
+
+    private val _pageSize = MutableStateFlow<Int>(10)
+    val pageSize: StateFlow<Int> = _pageSize
+
+    private val _orden = MutableStateFlow<Int>(0)
+    val orden: StateFlow<Int> = _orden
+
+    private val _totalPages = MutableStateFlow<Int>(1)
+    val totalPages: StateFlow<Int> = _totalPages
+
+    private val _totalItems = MutableStateFlow<Int>(1)
+    val totalItems: StateFlow<Int> = _totalItems
+
+    private val _hasNextPage = MutableStateFlow<Boolean>(false)
+    val hasNextPage: StateFlow<Boolean> = _hasNextPage
+
+    private val _hasPreviousPage = MutableStateFlow<Boolean>(false)
+    val hasPreviousPage: StateFlow<Boolean> = _hasPreviousPage
+
+    private val _registroDetalle = MutableStateFlow<RegistroCamarasCompletoResponse?>(null)
+    val registroDetalle: StateFlow<RegistroCamarasCompletoResponse?> = _registroDetalle
 
     // VARIABLES DE CONTEXTO
 
@@ -126,7 +176,14 @@ class RegistroCamarasViewModel @Inject constructor(
     private val _userPreferences = MutableStateFlow<UserPreferences?>(null)
     val userPreferences: StateFlow<UserPreferences?> = _userPreferences.asStateFlow()
 
-    // FUNCION DE CONTEXTO
+    // VARIABLES DE DIALOGS
+
+    private val _isAgregarDialogActive = MutableStateFlow<Boolean>(false)
+    val isAgregarDialogActive: StateFlow<Boolean> = _isAgregarDialogActive
+
+    private val _isDetalleDialogActive = MutableStateFlow<Boolean>(false)
+    val isDetalleDialogActive: StateFlow<Boolean> = _isDetalleDialogActive
+
 
     fun obtenerContexto(context: Context){
 
@@ -138,6 +195,97 @@ class RegistroCamarasViewModel @Inject constructor(
         }
     }
 
+    // FUNCIONES DE OBTENCION DE REGISTROS
+
+    fun obtenerRegistros() {
+        viewModelScope.launch {
+            val user = _userPreferences.value?.userData?.firstOrNull()
+            if (user != null) {
+                _usuario.value = user
+            }
+            _state.value = RegistroCamarasState.Loading
+
+            val resultado: Result<PaginationResponse<RegistroCamarasSimpleResponse>> =
+                if (_usuario.value.esTecnico == true) {
+                    useCase.obtenerPaginados(_usuario.value.nombreTecnico.orEmpty())
+                } else {
+                    useCase.obtenerPaginados(_pagina.value, _pageSize.value, _orden.value)
+                }
+
+            if (resultado.isSuccess) {
+                val paginacion = resultado.getOrNull()
+                _listaRegistros.value = paginacion?.data ?: emptyList()
+                _totalItems.value = paginacion?.totalItems ?: 0
+                _totalPages.value = paginacion?.totalPages ?: 1
+                _hasNextPage.value = paginacion?.hasNextPage ?: false
+                _hasPreviousPage.value = paginacion?.hasPreviousPage ?: false
+
+                _state.value = RegistroCamarasState.Success
+            } else {
+                _state.value = RegistroCamarasState.Error(
+                    resultado.exceptionOrNull()?.localizedMessage ?: "Error desconocido"
+                )
+            }
+        }
+    }
+
+    fun obtenerRegistroDetalle(id: String) {
+        viewModelScope.launch {
+            _stateRegistroDetalle.value = RegistroCamarasDetalleState.Loading
+
+            val resultado = useCase.obtenerPorId(id)
+
+            if (resultado.isSuccess) {
+                val data = resultado.getOrNull()
+                if (data != null) {
+                    _registroDetalle.value = data
+                    _stateRegistroDetalle.value = RegistroCamarasDetalleState.Success
+                } else {
+                    _stateRegistroDetalle.value = RegistroCamarasDetalleState.Error("Respuesta vacía del servidor")
+                }
+            } else {
+                _stateRegistroDetalle.value = RegistroCamarasDetalleState.Error(
+                    resultado.exceptionOrNull()?.localizedMessage ?: "Error desconocido"
+                )
+            }
+        }
+    }
+
+    fun crearNuevoRegistro() {
+        viewModelScope.launch {
+            _stateAgregarRegistro.value = AgregarRegistroCamarasState.Loading
+
+            val request = RegistroCamarasRequest(
+                empresa       = _selectedEmpresa.value,
+                tipo          = _selectedTipoRegistro.value,
+                lugar         = _selectedCiudadZona.value,
+                fechaRegistro = _fechaRegistro.value,
+                dia           = _paraElDia.value,
+                asesor        = _selectedAsesor.value,
+                nombreCliente = _nombreCliente.value,
+                dni           = _dni.value,
+                celular       = _celular.value,
+                celular2      = _celular2.value, // Falta definir MutableStateFlow<String?> para celular2
+                direccion     = _direccion.value,
+                referencia    = _referencia.value, // Falta definir MutableStateFlow<String?> para referencia
+                productos     = _productos.value,
+                total         = _total.value,
+                adelanto      = _adelanto.value,
+                saldo         = _saldo.value
+            )
+
+            val resultado = useCase.crearNuevoRegistro(request)
+
+            if (resultado.isSuccess) {
+                val mensaje = resultado.getOrNull()?.mensaje
+                _stateAgregarRegistro.value = AgregarRegistroCamarasState.Success
+            } else {
+                _stateAgregarRegistro.value = AgregarRegistroCamarasState.Error(
+                    resultado.exceptionOrNull()?.localizedMessage ?: "Error desconocido al registrar."
+                )
+            }
+        }
+    }
 
     // FUNCIONES DE CAMBIO DE VALORES DE VARIABLES
 
@@ -197,6 +345,22 @@ class RegistroCamarasViewModel @Inject constructor(
         _selectedAsesor.value = value
     }
 
+    fun onCelular2Change(value: String) {
+        _celular2.value = value
+    }
+
+    fun onReferenciaChange(value: String) {
+        _referencia.value = value
+    }
+
+    fun onAgregarDialogChange(value: Boolean) {
+        _isAgregarDialogActive.value = value
+    }
+
+    fun onDetalleDialogChange(value: Boolean) {
+        _isDetalleDialogActive.value = value
+    }
+
     // VALIDACIONES DE VARIABLES
 
     fun validarNombreCliente() {
@@ -253,6 +417,18 @@ class RegistroCamarasViewModel @Inject constructor(
 
     fun validarSelectedAsesor() {
         _selectedAsesorError.value = if (_selectedAsesor.value.isNullOrBlank()) "El asesor es obligatorio" else null
+    }
+
+    fun validarReferencia() {
+        _referenciaError.value = if (_referencia.value.isNullOrBlank()) "La fecha de recojo es obligatoria" else null
+    }
+
+    fun validarCelular2() {
+        _celular2Error.value = if (_celular2.value.isNullOrBlank()) "Debe indicar si es para el día" else null
+    }
+
+    fun resetStateAgregarRegistro() {
+        _stateAgregarRegistro.value = AgregarRegistroCamarasState.Init
     }
 
 }

@@ -1,6 +1,7 @@
 package com.clindevstu.registropendientes.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,10 +13,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -36,8 +44,11 @@ fun CCardGridData(
     headers: List<String>,
     data: List<String>,
     columns: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    actions: List<Pair<String, () -> Unit>> = emptyList()
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Card(modifier = modifier.padding(8.dp)) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(
@@ -48,16 +59,14 @@ fun CCardGridData(
                 Image(
                     painter = principalIcon,
                     contentDescription = "Ícono principal",
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(72.dp),
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Columna central (título y subtítulo)
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+                // Título y subtítulo
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleLarge
@@ -71,21 +80,37 @@ fun CCardGridData(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Columna derecha (ícono miniatura + estado)
-                Column(
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Image(
-                        painter = thumbnailIcon,
-                        contentDescription = "Miniatura",
-                        modifier = Modifier.size(40.dp),
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-                    )
+                // Menú desplegable a la derecha
+                Column(horizontalAlignment = Alignment.End) {
+                    Box {
+                        IconButton(onClick = { expanded = true }) {
+                            Image(
+                                painter = thumbnailIcon,
+                                contentDescription = "Opciones",
+                                modifier = Modifier.size(32.dp),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            actions.forEach { (label, action) ->
+                                DropdownMenuItem(
+                                    text = { Text(label) },
+                                    onClick = {
+                                        expanded = false
+                                        action()
+                                    }
+                                )
+                            }
+                        }
+                    }
+
                     Text(
                         text = estado,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
-
                     )
                 }
             }
@@ -101,6 +126,7 @@ fun CCardGridData(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -15,7 +15,7 @@ android {
         minSdk = 25
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -90,4 +90,6 @@ dependencies {
     // Compose integration (si usas collectAsState())
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.threetenabp)
 }

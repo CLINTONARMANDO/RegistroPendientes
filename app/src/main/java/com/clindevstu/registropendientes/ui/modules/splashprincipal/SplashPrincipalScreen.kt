@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 @Composable
 fun ScreenSplashPrincipal(navController: NavHostController) {
@@ -57,6 +59,45 @@ fun SplashPrincipalScreen(
         is SplashPrincipalState.Error -> {
             val error = (state as SplashPrincipalState.Error).message
             ErrorView(message = error)
+        }
+
+        is SplashPrincipalState.UpdateRequired -> {
+            val updateMessage = "Necesita actualizar la aplicación. Contáctese con el o la encargada."
+
+            AlertDialog(
+                onDismissRequest = { /* No permitir cerrar al tocar fuera */ },
+                title = {
+                    Text(
+                        text = "Actualización requerida",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                text = {
+                    Text(
+                        text = updateMessage,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                },
+                confirmButton = {},
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            // Acción para cerrar la app, por ejemplo:
+                            exitProcess(0)
+                        }
+                    ) {
+                        Text(
+                            text = "Cerrar",
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+                },
+                properties = DialogProperties(
+                    dismissOnBackPress = false,
+                    dismissOnClickOutside = false
+                )
+            )
+
         }
     }
 }

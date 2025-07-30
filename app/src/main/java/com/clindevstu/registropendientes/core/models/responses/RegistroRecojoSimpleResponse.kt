@@ -12,8 +12,10 @@ data class RegistroRecojoSimpleResponse(
     @SerializedName("asesor") val asesor: String?,
     @SerializedName("ciudad_zona") val ciudadZona: String?,
     @SerializedName("empresa") val empresa: String?,
-    @SerializedName("tipo_registro") val tipoRegistro: String?,
+    @SerializedName("dispositivo") val tipoRegistro: String?,
     @SerializedName("fecha_registro") val fechaRegistro: String?,
     @SerializedName("fecha_recojo") val fechaRecojo: String?,
-    @SerializedName("dia") val paraElDia: String?
+    @SerializedName("dia") val paraElDia: String?,
+    @SerializedName("tecnico") val tecnico: String?,
+    @SerializedName("estado") val estado: String?
 )

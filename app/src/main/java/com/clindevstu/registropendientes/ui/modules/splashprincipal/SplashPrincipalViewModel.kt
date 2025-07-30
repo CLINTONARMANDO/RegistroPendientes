@@ -2,10 +2,12 @@ package com.clindevstu.registropendientes.ui.modules.splashprincipal
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clindevstu.registropendientes.data.preferences.UserPreferences
+import com.clindevstu.registropendientes.domain.usecase.AppDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashPrincipalViewModel @Inject constructor(
+    private val useCase: AppDataUseCase,
     application: Application
 ) : AndroidViewModel(application) {
 
@@ -24,30 +27,57 @@ class SplashPrincipalViewModel @Inject constructor(
 
     private val userPreferences = UserPreferences(application)
 
+    private val context = application.applicationContext
+
     init {
         startSplash()
+    }
+
+    private fun getCurrentAppVersion(): Double {
+        val versionName = context.packageManager
+            .getPackageInfo(context.packageName, 0)
+            .versionName
+
+        return versionName?.toDoubleOrNull() ?: 0.0
     }
 
     private fun startSplash() {
         _state.value = SplashPrincipalState.Loading
 
         viewModelScope.launch {
-            // Simular splash con delay
             delay(1500)
 
             try {
-                // Leer usuario de DataStore
+                val versionResponse = useCase()
+                val versionData = versionResponse.data
+
+                val localVersion = getCurrentAppVersion()
+
+                Log.d("AppVersion", "Versión actual: $localVersion")
+                Log.d("ServerVersion", "Versión permitida: ${versionData?.ultimaVersionPermitida}")
+                // Verificación de versiones
+                when {
+                    localVersion < versionData!!.ultimaVersionPermitida -> {
+                        _state.value = SplashPrincipalState.UpdateRequired(force = true)
+                        return@launch
+                    }
+                    localVersion > versionData.ultimaVersion -> {
+                        _state.value = SplashPrincipalState.UpdateRequired(force = false)
+                        return@launch
+                    }
+                }
+
+                // Continuar con la lógica normal
                 val usuario = userPreferences.userData.first()
 
                 if (usuario.token.isNullOrEmpty()) {
-                    // No hay token, navegar a Login
                     _state.value = SplashPrincipalState.GoLogin
                 } else {
-                    // Hay token, navegar al Panel
                     _state.value = SplashPrincipalState.Success
                 }
+
             } catch (e: Exception) {
-                _state.value = SplashPrincipalState.Error("Error leyendo usuario: ${e.localizedMessage}")
+                _state.value = SplashPrincipalState.Error("Error: ${e.localizedMessage}")
             }
         }
     }
