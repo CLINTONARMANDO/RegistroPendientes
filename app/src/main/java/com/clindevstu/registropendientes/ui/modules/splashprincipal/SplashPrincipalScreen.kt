@@ -9,16 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.clindevstu.registropendientes.data.preferences.UserPreferences
 import com.clindevstu.registropendientes.ui.navigation.NavRoute
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.system.exitProcess
 
 @Composable

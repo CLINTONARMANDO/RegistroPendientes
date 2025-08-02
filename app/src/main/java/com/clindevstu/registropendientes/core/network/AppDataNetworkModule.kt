@@ -1,6 +1,6 @@
 package com.clindevstu.registropendientes.core.network
 
-import com.clindevstu.registropendientes.core.common.GlobalVars
+import com.clindevstu.registropendientes.common.GlobalVars
 import com.clindevstu.registropendientes.data.services.AppDataService
 import dagger.Module
 import dagger.Provides

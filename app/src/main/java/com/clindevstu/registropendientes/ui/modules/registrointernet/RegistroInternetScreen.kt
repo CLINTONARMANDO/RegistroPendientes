@@ -7,6 +7,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -23,13 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.clindevstu.registropendientes.R
-import com.clindevstu.registropendientes.core.common.AppFunctions
+import com.clindevstu.registropendientes.common.AppFunctions
 import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
 import com.clindevstu.registropendientes.data.preferences.UserPreferences
 import com.clindevstu.registropendientes.ui.components.CCardGridData
 import com.clindevstu.registropendientes.ui.components.CFullScreenModal
+import com.clindevstu.registropendientes.ui.components.CTextDialog
 import com.clindevstu.registropendientes.ui.components.CTopAppBarBody
 import com.clindevstu.registropendientes.ui.components.CTopBarSecondary
+import com.clindevstu.registropendientes.ui.modules.registroaverias.agregarregistroaverias.AgregarRegistroAveriasScreen
 import com.clindevstu.registropendientes.ui.modules.registrointernet.agregarregistrointernet.AgregarRegistroInternetScreen
 import com.clindevstu.registropendientes.ui.modules.registrointernet.registrointernetdetalle.RegistroInternetDetalleScreen
 
@@ -48,6 +51,7 @@ fun RegistroInternetScreen (navController: NavHostController, viewModel: Registr
     val usuario by userPreferences.userData.collectAsState(initial = UsuarioResponse())
     val isAgregarDialogActive by viewModel.isAgregarDialogActive.collectAsState()
     val isDetalleDialogActive by viewModel.isDetalleDialogActive.collectAsState()
+    val isConfirmCloseDialogActive by viewModel.isConfirmCloseDialogActive.collectAsState()
 
 
     LaunchedEffect(Unit) {
@@ -140,10 +144,22 @@ fun RegistroInternetScreen (navController: NavHostController, viewModel: Registr
     if (isAgregarDialogActive) {
         CFullScreenModal(
             title = "Agregar Registro",
-            onClose = { viewModel.onAgregarDialogChange(false) }
+            onClose = { viewModel.onConfirmCloseDialogChange(true) }
         ) {
             AgregarRegistroInternetScreen(viewModel)
         }
+    }
+
+    if (isConfirmCloseDialogActive) {
+        CTextDialog(
+            onDismiss = { viewModel.onConfirmCloseDialogChange(false) },
+            text = "¿Estás seguro de cerrar sin guardar?",
+            icon = Icons.Default.Warning,
+            onAccept = {
+                viewModel.onAgregarDialogChange(false)
+                viewModel.onConfirmCloseDialogChange(false)
+            }
+        )
     }
     if (isDetalleDialogActive) {
         CFullScreenModal(

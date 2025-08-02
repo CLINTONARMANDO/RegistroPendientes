@@ -14,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.clindevstu.registropendientes.core.common.AppDataOptions
+import com.clindevstu.registropendientes.common.AppDataOptions
 import com.clindevstu.registropendientes.ui.components.CComboBox
 import com.clindevstu.registropendientes.ui.components.CDatePicker
 import com.clindevstu.registropendientes.ui.components.CTextInput

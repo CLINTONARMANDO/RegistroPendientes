@@ -1,4 +1,4 @@
-package com.clindevstu.registropendientes.core.common
+package com.clindevstu.registropendientes.common
 
 object AppDataOptions {
     val asesores = listOf(
@@ -15,7 +15,7 @@ object AppDataOptions {
     )
 
     val tipoInstalacion = listOf(
-        "Fibra", "Migracion a Fibra", "Migración Inalámbrico", "Inalámbrico", "Cámaras"
+        "Fibra", "Migracion a Fibra", "Migración Inalámbrico", "Inalámbrico", "Cámaras", "Traslado Inalámbrico", "Traslado Fibra"
     )
 
     val tipoAveria = listOf(
@@ -23,7 +23,7 @@ object AppDataOptions {
     )
 
     val tipoRegistroCamara = listOf(
-        "Instalacion", "Averia"
+        "Instalacion", "Averia", "Revision", "Traslado"
     )
 
     val prioridad = listOf(
@@ -31,7 +31,7 @@ object AppDataOptions {
     )
 
     val ciudadZona = listOf(
-        "Ilave", "Zona Rural", "Pomata", "Acora", "Plateria", "Pilcuyo", "Juli", "Yunguyo", "Zepita", "Desaguadero"
+        "Ilave", "Zona Rural", "Pomata", "Acora", "Plateria", "Pilcuyo", "Juli", "Yunguyo", "Zepita", "Desaguadero", "Chacachaca", "Faro"
     )
 
     val paraElDia = listOf(
@@ -41,6 +41,4 @@ object AppDataOptions {
     val kitAntena = listOf(
         "Kit 1", "Kit 2", "Kit 3"
     )
-
-
 }

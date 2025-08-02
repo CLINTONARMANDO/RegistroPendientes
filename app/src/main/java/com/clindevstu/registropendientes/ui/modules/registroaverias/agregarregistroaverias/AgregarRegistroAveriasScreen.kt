@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -22,9 +24,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.clindevstu.registropendientes.core.common.AppDataOptions
+import com.clindevstu.registropendientes.common.AppDataOptions
 import com.clindevstu.registropendientes.ui.components.CComboBox
 import com.clindevstu.registropendientes.ui.components.CDatePicker
+import com.clindevstu.registropendientes.ui.components.CTextDialog
 import com.clindevstu.registropendientes.ui.components.CTextInput
 import com.clindevstu.registropendientes.ui.components.CTextInputMultiline
 import com.clindevstu.registropendientes.ui.modules.registroaverias.RegistroAveriasViewModel
@@ -43,7 +46,7 @@ fun AgregarRegistroAveriasScreen (viewModel: RegistroAveriasViewModel){
     // Para controlar el diálogo (evitar que reaparezca tras rotación, etc.)
     var showDialog by remember { mutableStateOf(false) }
     val errorMessage = (state as? AgregarRegistroAveriasState.Error)?.message.orEmpty()
-
+    val isConfirmSendDialogActive by viewModel.isConfirmSendDialogActive.collectAsState()
 
     val codigoRegistro     by viewModel.codigoRegistro.collectAsState()
     val nombreCliente      by viewModel.nombreCliente.collectAsState()
@@ -115,10 +118,11 @@ fun AgregarRegistroAveriasScreen (viewModel: RegistroAveriasViewModel){
                 modifier = Modifier.weight(1f)
             )
 
-            CTextInput(
-                value = selectedCiudadZona.orEmpty(),
-                label = "Ciudad",
-                onValueChange = viewModel::onSelectedCiudadZonaChange,
+            CComboBox(
+                options = AppDataOptions.ciudadZona,
+                label = "Lugar",
+                selectedOption = selectedCiudadZona.orEmpty(),
+                onOptionSelected = viewModel::onSelectedCiudadZonaChange,
                 error = selectedCiudadZonaError,
                 modifier = Modifier.weight(1f)
             )
@@ -210,7 +214,7 @@ fun AgregarRegistroAveriasScreen (viewModel: RegistroAveriasViewModel){
 
         Button(
             onClick = {
-                viewModel.crearNuevoRegistro()
+                viewModel.onConfirmSendDialogChange(true)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -247,5 +251,16 @@ fun AgregarRegistroAveriasScreen (viewModel: RegistroAveriasViewModel){
                 }
             )
         }
+    }
+    if (isConfirmSendDialogActive) {
+        CTextDialog(
+            onDismiss = { viewModel.onConfirmSendDialogChange(false) },
+            text = "¿Deseas registrar este nuevo reporte?",
+            icon = Icons.Default.CheckCircle,
+            onAccept = {
+                viewModel.crearNuevoRegistro()
+                viewModel.onConfirmSendDialogChange(false)
+            }
+        )
     }
 }

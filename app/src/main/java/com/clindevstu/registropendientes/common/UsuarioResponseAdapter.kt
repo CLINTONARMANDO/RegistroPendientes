@@ -1,4 +1,4 @@
-package com.clindevstu.registropendientes.core.common
+package com.clindevstu.registropendientes.common
 
 import com.clindevstu.registropendientes.core.models.responses.UsuarioResponse
 import com.google.gson.JsonDeserializationContext

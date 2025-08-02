@@ -1,4 +1,4 @@
-package com.clindevstu.registropendientes.core.common
+package com.clindevstu.registropendientes.common
 
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZonedDateTime

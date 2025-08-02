@@ -3,9 +3,12 @@ package com.clindevstu.registropendientes.ui.modules.registrointernet.agregarreg
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -21,10 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.clindevstu.registropendientes.core.common.AppDataOptions
+import com.clindevstu.registropendientes.common.AppDataOptions
 import com.clindevstu.registropendientes.ui.components.CComboBox
 import com.clindevstu.registropendientes.ui.components.CDatePicker
+import com.clindevstu.registropendientes.ui.components.CTextDialog
 import com.clindevstu.registropendientes.ui.components.CTextInput
+import com.clindevstu.registropendientes.ui.components.CTextInputMultiline
 import com.clindevstu.registropendientes.ui.modules.registrointernet.RegistroInternetViewModel
 
 @Composable
@@ -42,7 +47,7 @@ fun AgregarRegistroInternetScreen(viewModel: RegistroInternetViewModel){
     // Para controlar el diálogo (evitar que reaparezca tras rotación, etc.)
     var showDialog by remember { mutableStateOf(false) }
     val errorMessage = (state as? AgregarRegistroInternetState.Error)?.message.orEmpty()
-
+    val isConfirmSendDialogActive by viewModel.isConfirmSendDialogActive.collectAsState()
 
     val codigoRegistro by viewModel.codigoRegistro.collectAsState()
     val nombreCliente by viewModel.nombreCliente.collectAsState()
@@ -133,15 +138,14 @@ fun AgregarRegistroInternetScreen(viewModel: RegistroInternetViewModel){
                 error = selectedTipoRegistroError,
                 modifier = Modifier.weight(1f)
             )
-
-            CTextInput(
-                value = selectedCiudadZona.orEmpty(),
-                label = "Ciudad",
-                onValueChange = viewModel::onSelectedCiudadZonaChange,
+            CComboBox(
+                options = AppDataOptions.ciudadZona,
+                label = "Lugar",
+                selectedOption = selectedCiudadZona.orEmpty(),
+                onOptionSelected = viewModel::onSelectedCiudadZonaChange,
                 error = selectedCiudadZonaError,
                 modifier = Modifier.weight(1f)
             )
-
         }
 
         Row(
@@ -158,7 +162,7 @@ fun AgregarRegistroInternetScreen(viewModel: RegistroInternetViewModel){
             CComboBox(
                 options = AppDataOptions.paraElDia,
                 label = "Dia",
-                selectedOption = selectedParaElDiaError.orEmpty(),
+                selectedOption = selectedParaElDia.orEmpty(),
                 onOptionSelected = viewModel::onSelectedParaElDiaChange,
                 error = selectedParaElDiaError,
                 modifier = Modifier.weight(1f)
@@ -319,21 +323,21 @@ fun AgregarRegistroInternetScreen(viewModel: RegistroInternetViewModel){
             onOptionSelected = viewModel::onSelectedPrioridadChange,
             error = selectedPrioridadError,
         )
-        CTextInput(
+        CTextInputMultiline(
             value = descripcion.orEmpty(),
             label = "Descripcion",
             onValueChange = viewModel::onDescripcionChange,
             error = descripcionError,
-            modifier = Modifier.weight(1f)
         )
         Button(
             onClick = {
-                viewModel.crearNuevoRegistro()
+                viewModel.onConfirmSendDialogChange(true)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Registrar")
         }
+        Spacer(Modifier.padding(8.dp))
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = {
@@ -365,5 +369,16 @@ fun AgregarRegistroInternetScreen(viewModel: RegistroInternetViewModel){
                 }
             )
         }
+    }
+    if (isConfirmSendDialogActive) {
+        CTextDialog(
+            onDismiss = { viewModel.onConfirmSendDialogChange(false) },
+            text = "¿Deseas registrar este nuevo reporte?",
+            icon = Icons.Default.CheckCircle,
+            onAccept = {
+                viewModel.crearNuevoRegistro()
+                viewModel.onConfirmSendDialogChange(false)
+            }
+        )
     }
 }

@@ -1,4 +1,4 @@
-package com.clindevstu.registropendientes.core.common
+package com.clindevstu.registropendientes.common
 
 object GlobalVars {
     const val BASE_URL = "https://script.google.com/macros/s/"

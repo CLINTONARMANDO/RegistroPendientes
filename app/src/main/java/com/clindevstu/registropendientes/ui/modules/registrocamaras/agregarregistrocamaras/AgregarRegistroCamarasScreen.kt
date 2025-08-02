@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -31,13 +32,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.clindevstu.registropendientes.core.common.AppDataOptions
+import com.clindevstu.registropendientes.common.AppDataOptions
 import com.clindevstu.registropendientes.ui.components.CComboBox
 import com.clindevstu.registropendientes.ui.components.CDatePicker
 import com.clindevstu.registropendientes.ui.components.CTextInput
 import com.clindevstu.registropendientes.ui.components.CEditableTableComposable
+import com.clindevstu.registropendientes.ui.components.CTextDialog
 import com.clindevstu.registropendientes.ui.components.CTextInputSimple
 import com.clindevstu.registropendientes.ui.modules.registrocamaras.RegistroCamarasViewModel
+
+@Composable
+fun ScreenAgregarRegistroCamaras(){
+    val viewModel: RegistroCamarasViewModel = hiltViewModel()
+    AgregarRegistroCamarasScreen(viewModel)
+}
+
 @Composable
 fun AgregarRegistroCamarasScreen(viewModel: RegistroCamarasViewModel){
 
@@ -47,6 +56,7 @@ fun AgregarRegistroCamarasScreen(viewModel: RegistroCamarasViewModel){
     // Para controlar el diálogo (evitar que reaparezca tras rotación, etc.)
     var showDialog by remember { mutableStateOf(false) }
     val errorMessage = (state as? AgregarRegistroCamarasState.Error)?.message.orEmpty()
+    val isConfirmSendDialogActive by viewModel.isConfirmSendDialogActive.collectAsState()
 
     val nombreCliente by viewModel.nombreCliente.collectAsState()
     val dni by viewModel.dni.collectAsState()
@@ -330,10 +340,8 @@ fun AgregarRegistroCamarasScreen(viewModel: RegistroCamarasViewModel){
 
         Button(
             onClick = {
-                viewModel.onProductosChange(
-                    construirTextoProductos(filas)
-                )
-                viewModel.crearNuevoRegistro()
+
+                viewModel.onConfirmSendDialogChange(true)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -371,6 +379,20 @@ fun AgregarRegistroCamarasScreen(viewModel: RegistroCamarasViewModel){
             )
         }
     }
+    if (isConfirmSendDialogActive) {
+        CTextDialog(
+            onDismiss = { viewModel.onConfirmSendDialogChange(false) },
+            text = "¿Deseas registrar este nuevo reporte?",
+            icon = Icons.Default.CheckCircle,
+            onAccept = {
+                viewModel.onProductosChange(
+                    construirTextoProductos(filas)
+                )
+                viewModel.crearNuevoRegistro()
+                viewModel.onConfirmSendDialogChange(false)
+            }
+        )
+    }
 
 }
 data class FilaProducto(
@@ -380,11 +402,6 @@ data class FilaProducto(
     var total: String
 )
 
-@Composable
-fun ScreenAgregarRegistroCamaras(){
-    val viewModel: RegistroCamarasViewModel = hiltViewModel()
-    AgregarRegistroCamarasScreen(viewModel)
-}
 
 fun construirTextoProductos(filas: List<FilaProducto>): String {
     return filas.joinToString(separator = "\n") { fila ->

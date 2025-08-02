@@ -237,6 +237,12 @@ class RegistroInternetViewModel @Inject constructor(
     private val _isDetalleDialogActive = MutableStateFlow<Boolean>(false)
     val isDetalleDialogActive: StateFlow<Boolean> = _isDetalleDialogActive
 
+    private val _isConfirmCloseDialogActive = MutableStateFlow<Boolean>(false)
+    val isConfirmCloseDialogActive: StateFlow<Boolean> = _isConfirmCloseDialogActive
+
+    private val _isConfirmSendDialogActive = MutableStateFlow<Boolean>(false)
+    val isConfirmSendDialogActive: StateFlow<Boolean> = _isConfirmSendDialogActive
+
 
     fun obtenerContexto(context: Context){
 
@@ -457,6 +463,14 @@ class RegistroInternetViewModel @Inject constructor(
 
     fun onDetalleDialogChange(value: Boolean) {
         _isDetalleDialogActive.value = value
+    }
+
+    fun onConfirmSendDialogChange(value: Boolean) {
+        _isConfirmSendDialogActive.value = value
+    }
+
+    fun onConfirmCloseDialogChange(value: Boolean) {
+        _isConfirmCloseDialogActive.value = value
     }
 
     // FUNCION DE VALIDACION DE FORMULARIO

@@ -51,7 +51,7 @@ fun CFullScreenModal(
                 modifier = modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(0.dp), // Sin padding, ocupa todo
+                    .padding(0.dp),
                 shape = RectangleShape, // Quita bordes redondeados
                 color = MaterialTheme.colorScheme.background,
                 tonalElevation = 4.dp
